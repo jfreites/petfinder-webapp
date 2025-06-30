@@ -1,0 +1,81 @@
+---
+import Layout from "../../../layouts/Layout.astro"
+
+const locals = Astro.locals
+const speciesList = [
+    'dog',
+    'cat'
+];
+
+const errors = { type: "", species: "" };
+if (Astro.request.method === 'POST') {
+    try {
+        const data = await Astro.request.formData()
+        const name = data.get("name");
+        const type = data.get("type");
+        const species = data.get("species");
+
+        if (typeof species !== "string" || !speciesList.includes(species)) {
+            errors.species += "Invalid species";
+        }
+        
+        const hasErrors = Object.values(errors).some(msg => msg)
+
+        if (!hasErrors) {
+            await locals.pb.collection('pet_reports').create(data);
+            return Astro.redirect("/pet-report/form")
+        }
+    } catch (error) {
+        console.error('login error', error);
+    }
+}
+
+let data = null
+
+try {
+    data = await locals.pb.collection("pet_reports").getList(1, 10, {})
+} catch (error) {
+    console.error('login error', error);
+}
+---
+<Layout>
+    <h2>Pet Report</h2>
+    <form class="gap-y-4" method="post">
+        <div>
+            <label for="species">Species</label>
+            <input type="text" name="species">
+            {errors.species && <p>{errors.species}</p>}
+        </div>
+
+        <div>
+            <label for="type">Type</label>
+            <input type="text" name="type">
+        </div>
+
+        <div>
+            <label for="name">Name</label>
+            <input type="text" name="name">
+        </div>
+
+        <div>
+            <button type="submit">Send</button>
+        </div>
+    </form>
+
+    <div>
+        <ul>
+        {data && data.items.map((pet: any) => 
+            <li>{pet.id} - {pet.name}</li>
+        )}
+        </ul>
+    </div>
+</Layout>
+
+<style>
+    label {
+        display: block;
+    }
+    form div {
+        margin-bottom: 10px;
+    }
+</style>

@@ -1,0 +1,51 @@
+---
+export const prerender = false
+
+import Layout from "../../../layouts/Layout.astro"
+const locals = Astro.locals
+
+if (Astro.request.method === 'POST') {
+    try {
+        const data = await Astro.request.formData()
+        const email = data.get('email')
+        const pwd = data.get('password')
+
+        const { token, record } = await locals.pb.collection('users').authWithPassword(email, pwd);
+
+        Astro.cookies.set('pbToken', token, {
+            path: '/',
+            httpOnly: true
+        });
+
+        return Astro.redirect("/")
+    } catch (error) {
+        console.error('login error', error);
+    }
+}
+---
+<Layout>
+    <h2>Login</h2>
+    <form class="gap-y-4" method="post">
+        <div>
+            <label for="email">Email</label>
+            <input type="email" name="email">
+        </div>
+
+        <div>
+            <label for="password">password</label>
+            <input type="password" name="password">
+        </div>
+        <div>
+            <button type="submit">Send</button>
+        </div>
+    </form>
+</Layout>
+
+<style>
+    label {
+        display: block;
+    }
+    form div {
+        margin-bottom: 10px;
+    }
+</style>
