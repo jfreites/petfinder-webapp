@@ -1,0 +1,16 @@
+---
+import { Image } from "astro:assets";
+// import Logo from "../assets/images/logo-petfinder.svg";
+import Logo from "../assets/images/logo-temp.webp";
+import { siteSlogan } from "../data/config";
+---
+
+<div class="flex items-center gap-2 lg:gap-6">
+	<!-- <Logo class="w-auto h-8 lg:h-12" /> -->
+	<Image src={Logo} alt="Petfinder Logo" class:list={"w-auto h-8 lg:h-12"} />
+
+	<div>
+		<h2 class="font-semibold text-rose-500">PetFinder</h2>
+		<p class="max-lg:hidden text-sm text-center font-semibold">{siteSlogan}</p>
+	</div>
+</div>

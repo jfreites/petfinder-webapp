@@ -1,0 +1,14 @@
+---
+import { getEntries } from "astro:content";
+// import CardCat from "./CardCat.astro";
+const { pets = [] } = Astro.props;
+const petEntries = await getEntries(pets.map((id: string) => ({ collection: "pets", id: id })));
+---
+
+<div>
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 xl:gap-24">
+		{petEntries.map((pet: any) => 
+            <p>{pet}</p>
+        )}
+	</div>
+</div>
